@@ -217,7 +217,7 @@ body.viewpage #page{display:block;padding:0 0 70px}
 <div id="blocks"></div>
 <div id="status">
   <div><span id="where">top</span><span id="lines"></span></div>
-  <div><span id="found"></span><button id="plainbtn" title="Switch to a plain text menu">plain menu</button><span class="dots"></span></div>
+  <div><span id="found"></span><button id="plainbtn" title="Switch to a plain text menu">plain menu</button></div>
 </div>
 <div id="toasts"></div>
 
@@ -230,7 +230,7 @@ const C={
   now:[['building','This site, and a small text game about vague emails'],['reading','One Up by Joost van Dreunen, On Writing Well by William Zinsser, and Stoner by John Williams'],['playing','Uncharted: The Nathan Drake Collection']],
   facts:[['Open to','Strategy & Ops, BizOps, GTM strategy'],['Where','San Francisco · New York'],['Background','Deloitte · ServiceNow · Vanderbilt Owen']],
   deskNote:'click a block. it falls. something opens. click them all.',
-  posts:[{slug:'call-of-duty-skill-not-spectacle',title:'Call of Duty’s real advantage is skill, not spectacle',date:'2026-11-17',tags:['gaming','strategy'],md:`Call of Duty has had a long history in gaming, and in culture more broadly. PewDiePie, one of the biggest YouTubers in a previous era, got his start posting Call of Duty gameplay. It’s a core childhood memory for most of Gen Z, and nearly everyone knows someone who has put hundreds of hours into it. But the shooter market has changed since Call of Duty’s early years, and the franchise has had to change with it.
+  posts:[{slug:'call-of-duty-skill-not-spectacle',title:'Call of Duty’s real advantage is skill, not spectacle',date:'2026-10-17',tags:['gaming','strategy'],md:`Call of Duty has had a long history in gaming, and in culture more broadly. PewDiePie, one of the biggest YouTubers in a previous era, got his start posting Call of Duty gameplay. It’s a core childhood memory for most of Gen Z, and nearly everyone knows someone who has put hundreds of hours into it. But the shooter market has changed since Call of Duty’s early years, and the franchise has had to change with it.
 
 Two shifts mattered most:
 1. Fortnite popularized the free-to-play battle royale model.
@@ -620,7 +620,7 @@ const dayStr=new Date().toLocaleDateString([],{month:'short',day:'numeric',year:
 
 $('#read').innerHTML=`
 <div id="rwall" class="wallbox"></div>
-<div class="topline"><span class="mono">~/${esc(C.name.toLowerCase().replace(/\s+/g,'-'))}</span><span class="topnav">${ORDER.map(k=>`<a href="#${SEC[k]}">${LABEL[k].toLowerCase()}</a>`).join('')}<a href="#" id="toblocks">block menu</a></span><span class="dots"></span></div>
+<div class="topline"><span class="mono">~/${esc(C.name.toLowerCase().replace(/\s+/g,'-'))}</span><span class="topnav">${ORDER.map(k=>`<a href="#${SEC[k]}">${LABEL[k].toLowerCase()}</a>`).join('')}<a href="#" id="toblocks">block menu</a></span></div>
 <main>
 <div class="col hero">
   <h1>${esc(C.name)}</h1>${scrib()}
@@ -664,7 +664,7 @@ $('#cp').onclick=async()=>{const b=$('#cp');try{await navigator.clipboard.writeT
 termInit($('#terminal-sec'));
 
 /* ---------- menu mode ---------- */
-dots();let _t='chalkviolet';try{_t=localStorage.getItem('mltheme')||'chalkviolet'}catch(e){}setTheme(THEMES.some(x=>x[0]===_t)?_t:'chalkviolet');let _k='e';try{_k=new URLSearchParams(location.search).get('kit')||localStorage.getItem('mlkit')||'e'}catch(e){}setKit(KITS.some(x=>x[0]===_k)?_k:'e');let _c=false;try{const q=new URLSearchParams(location.search).get('caps');_c=q!==null?q==='1':localStorage.getItem('mlcaps')==='1'}catch(e){}setCaps(_c);
+setTheme('chalkviolet');setKit('e');setCaps(false);
 let plain=false,ready=false;try{plain=localStorage.getItem('mlplain')==='1'}catch(e){}
 const wide=matchMedia('(min-width:760px) and (min-height:560px)');
 function applyNav(){
