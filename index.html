@@ -96,7 +96,7 @@ body.blocks .stack .card{top:calc(var(--skyH) + 16px + var(--i)*10px)}
 .trow small{grid-column:1/-1;color:var(--surf2);font-size:17px;line-height:1.35}
 .pips{font:12px var(--mono);letter-spacing:3px;white-space:nowrap}
 .legend{font:12px var(--mono);color:var(--mute);margin:12px 0 0}
-.mail{display:inline-block;font:500 clamp(20px,6vw,27px) var(--serif);word-break:break-all;margin:6px 0 16px}
+.mail{display:inline-block;font:500 clamp(18px,5vw,23px) var(--serif);word-break:break-all;margin:4px 0 14px}
 .thanks{text-align:center;padding:26px 0 40px}.thanks .hand{display:block;margin-bottom:14px}
 .wideonly{display:none;margin:16px 0 0}
 a.u{text-decoration:none;background-image:linear-gradient(var(--hlc),var(--hlc));background-size:100% 35%;background-position:0 92%;background-repeat:no-repeat;color:var(--ink);transition:background-size .15s steps(3)} a.u:hover{background-size:100% 85%}
@@ -232,12 +232,12 @@ body.viewpage #page{display:block;padding:0 0 70px}
 /* ===== EDIT ME: placeholder content ===== */
 const C={
   name:'Utkarsh Mishra', role:'MBA ’26 · Strategy & Ops · Pricing & GTM',
-  blurb:'I turn vague, expensive problems into plans people can run: pricing, go-to-market, and the operating rhythm behind them. Three years of cloud pricing at Deloitte, a summer in strategy at ServiceNow, and an MBA at Vanderbilt.',
+  blurb:'I’m a professional problem solver and operator. I study markets, I talk to people, and I put together strategies for senior leadership to do their best work! Most importantly, I take initiative to see all this through, and also to bring said strategies to fruition.\n\nI have done this for three years at Deloitte in internal strategy and operations, and then in a Business Strategy internship at ServiceNow, during my MBA at Vanderbilt.\n\nI also really like video games! (The Tetris blocks on top may have given that away.) And movies. And books. And talking to people about their favorite games, movies and books.',
   about:['I like problems where the data is messy and the decision is contested. Most of my work has been in cloud pricing and monetization, where a bad assumption shows up as lost margin, and a good framework gets a room of people to agree.','I studied computer science, so I build my own tools when the data will not come to me. I once automated a pricing feed that had cost a team about 72 hours a year. I am looking for a Strategy & Ops, BizOps or GTM role at a tech company in San Francisco or New York.'],
   now:[['building','This site, and a small text game about vague emails'],['reading','One Up by Joost van Dreunen, On Writing Well by William Zinsser, and Stoner by John Williams'],['playing','Uncharted: The Nathan Drake Collection']],
   facts:[['Open to','Strategy & Ops, BizOps, GTM strategy'],['Where','San Francisco · New York'],['Background','Deloitte · ServiceNow · Vanderbilt Owen']],
   deskNote:'click a block. it falls. something opens. click them all.',
-  posts:[{slug:'call-of-duty-skill-not-spectacle',title:'Call of Duty’s real advantage is skill, not spectacle',date:'2026-10-17',tags:['gaming','strategy'],md:`Call of Duty has had a long history in gaming, and in culture more broadly. PewDiePie, one of the biggest YouTubers in a previous era, got his start posting Call of Duty gameplay. It’s a core childhood memory for most of Gen Z, and nearly everyone knows someone who has put hundreds of hours into it. But the shooter market has changed since Call of Duty’s early years, and the franchise has had to change with it.
+  posts:[{slug:'call-of-duty-skill-not-spectacle',title:'(Margin) Call of Duty',date:'2026-10-17',tags:['gaming','strategy'],md:`Call of Duty has had a long history in gaming, and in culture more broadly. PewDiePie, one of the biggest YouTubers in a previous era, got his start posting Call of Duty gameplay. It’s a core childhood memory for most of Gen Z, and nearly everyone knows someone who has put hundreds of hours into it. But the shooter market has changed since Call of Duty’s early years, and the franchise has had to change with it.
 
 Two shifts mattered most:
 1. Fortnite popularized the free-to-play battle royale model.
@@ -276,10 +276,10 @@ All this points toward the same goal: retaining the seasoned players already in 
 
 Call of Duty sits on one of the deepest legacies in first-person shooters. What it’s missing isn’t a new gimmick. It’s the discipline to let its one real advantage, a world built on skill and not luck, be the thing the whole strategy is built around.`}],
   status:'Open to work', photo:'', photoCaption:'me, mid-thought',
-  highlight:'vague, expensive problems',
+  highlight:'',
   ticker:['Open to work','MBA ’26 · Vanderbilt Owen','Pricing · GTM · Strategy & Ops','San Francisco · New York','Say hello'],
   email:'utkarshmjapps@gmail.com', resume:'Utkarsh_Mishra_Resume.pdf',
-  links:[['LinkedIn','https://www.linkedin.com/in/utkarshmishra99']],
+  links:[['LinkedIn','https://www.linkedin.com/in/utkarshmishra99'],['X','https://x.com/utkarshgmi'],['GitHub','https://www.github.com/utkarshcm'],['Letterboxd','https://boxd.it/3Ij01'],['Goodreads','https://www.goodreads.com/user/show/142898496-utkarsh-mishra']],
   projects:[
     {n:'From zero: a sustainability reporting offer',s:'Deloitte · 2023',
      d:'Regulators were tightening ESG disclosure rules. We had the cloud partnerships to help clients but nothing to sell.',
@@ -624,7 +624,7 @@ const squig=()=>`<div class="rule"></div>`;
 const scrib=()=>`<div class="bar"></div>`;
 const badge=(id='bp')=>{const t=(C.status||'Open to work').toUpperCase(),r=(t+' • ').repeat(Math.max(1,Math.round(26/(t.length+3))));return `<svg class="badge" viewBox="0 0 96 96" aria-hidden="true"><circle cx="48" cy="48" r="46"/><path id="${id}" d="M48 48 m-34 0 a34 34 0 1 1 68 0 a34 34 0 1 1 -68 0" fill="none"/><text><textPath href="#${id}" textLength="205" lengthAdjust="spacing">${esc(r)}</textPath></text><circle class="dot" cx="48" cy="48" r="5"/></svg>`};
 const photo=()=>`<figure class="polaroid"><div class="ph">${C.photo?`<img src="${esc(C.photo)}" alt="Portrait of ${esc(C.name)}">`:`<span class="mono">photo</span>`}</div></figure>`;
-const lede=()=>{let t=esc(C.blurb),h=esc(C.highlight||'');return h&&t.includes(h)?t.replace(h,`<mark class="hl">${h}</mark>`):t};
+const lede=()=>esc(C.blurb).split(/\n\n/).map(t=>`<p class="lede">${t}</p>`).join('');
 const dayStr=new Date().toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'});
 
 $('#read').innerHTML=`
@@ -634,14 +634,14 @@ $('#read').innerHTML=`
 <div class="col hero wide">
   <h1>${esc(C.name)}</h1>${scrib()}
   <div class="role">${esc(C.role)}</div>
-  <p class="lede">${lede()}</p>
+  ${lede()}
   <div class="cta"><a class="btn solid" href="${esc(C.resume)}" target="_blank" rel="noopener">Résumé</a><a class="btn" href="#contact-sec">Get in touch</a></div>
 </div>
 <div class="col wide">
   <section class="card anchor" id="about-sec" style="--pc:var(--brass)"><div class="ctab"><span>${sc("01 — about")}</span></div>${C.about.map(t=>`<p>${esc(t)}</p>`).join('')}<div class="kv" style="margin-top:14px">${C.facts.map(([k,v])=>`<span class="k">${esc(k)}</span><span>${esc(v)}</span>`).join('')}</div><details class="case now"><summary>What I’m up to now</summary><dl class="nowl"><dt class="nowd">As of ${esc(dayStr)}</dt><dd></dd>${C.now.map(([k,v])=>`<dt>${sc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></details></section>
 </div>
 <div class="col wide anchor" id="work-sec" style="margin-top:56px">
-  <div class="kick">${sc("02 — work")}</div><h2 class="sec">Work I would show you</h2>${squig()}
+  <div class="kick">${sc("02 — work")}</div><h2 class="sec">Only the greatest hits</h2>${squig()}
   <div class="stack">${C.projects.map((p,i)=>`<article class="card" style="--i:${i};--r:${ROT[i%4]}deg;--pc:var(--accx);--cp:color-mix(in srgb,var(--accx) ${100-[0,15,29,44,58][i%5]}%,#fff);--tc:${i<2?'#fff':'#150c2e'}"><div class="ctab"><span>${sc("case_"+String(i+1).padStart(2,"0"))}</span></div><span class="st">${esc(p.s)}</span><h3>${esc(p.n)}</h3><p>${esc(p.d)}</p><p class="res">${esc(p.r)}</p><details class="case"><summary>Read the case</summary>${caseDL(p,true)}</details>${p.t.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</article>`).join('')}</div>
 </div>
 <div class="col wide anchor" id="writing-sec" style="margin-top:40px">
@@ -655,7 +655,7 @@ $('#read').innerHTML=`
 </div>
 <div class="col anchor" id="contact-sec" style="margin-top:56px">
   <div class="kick">${sc("05 — contact")}</div><h2 class="sec">Say hello.</h2>${squig()}
-  <section class="card" style="--pc:var(--teal)"><div class="ctab"><span>${sc("contact")}</span></div><a class="mail u" href="mailto:${esc(C.email)}">${esc(C.email)}</a><div class="cta" style="margin:0 0 12px"><button class="btn solid" id="cp">Copy email</button></div><p style="margin:0">${C.links.map(([n,u])=>`<a class="u" href="${esc(u)}" target="_blank" rel="noopener">${esc(n)} ↗</a>`).join(' &nbsp; ')}</p></section>
+  <section class="card" style="--pc:var(--teal)"><div class="ctab"><span>${sc("contact")}</span></div><p style="margin:0 0 4px">Reach out if you’d like to hire me, or just to have a chat!</p><a class="mail u" href="mailto:${esc(C.email)}">${esc(C.email)}</a><p style="margin:0">${C.links.map(([n,u])=>`<a class="u" href="${esc(u)}" target="_blank" rel="noopener">${esc(n)} ↗</a>`).join(' &nbsp; ')}</p></section>
 </div>
 <div class="col term-col anchor" id="terminal-sec" style="margin-top:56px">
   <div class="kick">${sc("06 — terminal")}</div><h2 class="sec">Poke around.</h2>${squig()}
@@ -669,7 +669,6 @@ $('#read').innerHTML=`
 const SECK=Object.fromEntries(Object.entries(SEC).map(([k,v])=>[v,k]));
 document.querySelectorAll('#read a[href$="-sec"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const k=SECK[a.getAttribute('href').slice(1)];blocksOn()&&PCS[k]?onPiece(k):goSec(k)}));
 $('#top').onclick=()=>{scrollToY(0);try{history.replaceState(null,'',location.pathname)}catch(e){}};
-$('#cp').onclick=async()=>{const b=$('#cp');try{await navigator.clipboard.writeText(C.email);b.textContent='Copied'}catch(e){b.textContent='Copy failed'}};
 termInit($('#terminal-sec'));
 
 /* ---------- menu mode ---------- */
