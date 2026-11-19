@@ -45,7 +45,7 @@ p{margin:0 0 12px}
 #read main{position:relative;z-index:1}
 #rwall{position:fixed;inset:0;z-index:0;opacity:.2}
 .dock svg{width:22px;height:22px}.dock svg rect{opacity:.55}.dock a.cur svg rect{opacity:1}
-.topline{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px}
+.topline{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--rule);display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px}
 .topnav{display:none;gap:18px;align-items:center;font:13px var(--mono)} .topnav a{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent} .topnav a:hover{border-color:var(--accx)}
 .col{max-width:680px;margin:0 auto;padding:0 18px}
 .anchor{scroll-margin-top:76px}
@@ -103,7 +103,7 @@ a.u{text-decoration:none;background-image:linear-gradient(var(--hlc),var(--hlc))
 .dock{position:fixed;left:0;right:0;bottom:0;height:60px;background:var(--bg);border-top:1px solid var(--rule);display:flex;z-index:40}
 .dock a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--mute);text-decoration:none;font:11px var(--mono)}
 .dock a.cur{color:var(--accx);box-shadow:inset 0 2px 0 var(--accx)}
-@media (min-width:760px){.dock{display:none}.topnav{display:flex}#read{padding-bottom:40px}.wideonly{display:block}}
+@media (min-width:760px){.dock{display:none}.topline{display:flex}.topnav{display:flex}#read{padding-bottom:40px}.wideonly{display:block}}
 :root{--head:var(--serif);--hw:400;--bs:19px;--ls:22px}
 html[data-kit=b]{--serif:'Inter',system-ui,sans-serif;--head:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;--hw:500;--bs:17px;--ls:20px}
 html[data-kit=b] .hero h1,html[data-kit=b] #read h2.sec{letter-spacing:-.035em}
@@ -449,21 +449,22 @@ function onPiece(k){
   const done=()=>{p.fly=false;place(p);
     if(!RM())p.el.querySelector('.pcin').animate([{transform:'scale(1.05,.88)'},{transform:'scale(1,1)'}],{duration:200,easing:'ease-out'});
     if(allLanded()&&noneFlying())clearLine()};
-  if(RM()){done();return}
+  if(RM()||typeof p.el.animate!=='function'){done();return}
   const a=p.el.animate([{transform:'translate(0,0)',offset:0,easing:'cubic-bezier(.25,.8,.35,1)'},{transform:`translate(${dx}px,0)`,offset:.28,easing:'cubic-bezier(.55,0,.85,.55)'},{transform:`translate(${dx}px,${dy}px)`,offset:1}],{duration:700,fill:'forwards'});
-  a.finished.then(()=>{p.el.style.left=to.x+'px';p.el.style.top=to.y+'px';a.cancel();done()});
+  const fin=()=>{p.el.style.left=to.x+'px';p.el.style.top=to.y+'px';try{a.cancel()}catch(e){}done()};
+  a.finished.then(fin,fin);
 }
 async function clearLine(){
-  busy=true;const rm=RM();
+  busy=true;const rm=RM()||typeof Element.prototype.animate!=='function';
   const cells=[...document.querySelectorAll('.pc .cl')],isBottom=c=>+c.dataset.r===PCS[c.closest('.pc').dataset.id].h-1;
   const bottom=cells.filter(isBottom),upper=cells.filter(c=>!isBottom(c));
-  if(!rm)await Promise.all(bottom.map(c=>c.animate([{filter:'brightness(1)'},{filter:'brightness(2.4)'},{filter:'brightness(1)'}],{duration:170,iterations:3}).finished));
+  if(!rm)await Promise.all(bottom.map(c=>c.animate([{filter:'brightness(1)'},{filter:'brightness(2.4)'},{filter:'brightness(1)'}],{duration:170,iterations:3}).finished.catch(()=>{})));
   if(!rm){
     document.querySelectorAll('.pc .lb').forEach(l=>l.animate([{opacity:1},{opacity:0}],{duration:200,fill:'forwards'}));
     const a=bottom.map(c=>c.animate([{transform:'scaleY(1)',opacity:1},{transform:'scaleY(0)',opacity:0}],{duration:320,easing:'ease-in',fill:'forwards'}));
     const b=upper.map(c=>c.animate([{transform:'translateY(0)'},{transform:`translateY(${cell}px)`}],{duration:300,delay:240,easing:'cubic-bezier(.5,0,.9,.6)',fill:'forwards'}));
-    await Promise.all([...a,...b].map(x=>x.finished));
-    await Promise.all(upper.map(c=>c.animate([{opacity:1},{opacity:0}],{duration:250,fill:'forwards'}).finished));
+    await Promise.all([...a,...b].map(x=>x.finished.catch(()=>{})));
+    await Promise.all(upper.map(c=>c.animate([{opacity:1},{opacity:0}],{duration:250,fill:'forwards'}).finished.catch(()=>{})));
   }
   document.querySelectorAll('.pc').forEach(el=>el.getAnimations({subtree:true}).forEach(x=>x.cancel()));
   ORDER.forEach(k=>{PCS[k].landed=false;PCS[k].el.classList.remove('down')});
