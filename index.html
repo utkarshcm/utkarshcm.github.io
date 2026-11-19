@@ -137,6 +137,14 @@ html[data-kit=c][data-caps] .hero h1{font-size:clamp(34px,9vw,70px);letter-spaci
 body.blocks #skyfade,body.blocks #floorfade,body.blocks #well,body.blocks #blocks{display:block}
 body.blocks #status{display:flex}
 body.blocks .topline,body.blocks #rwall{display:none}
+/* block mode: use the width. Text sections span the page, cases pair up, resume and contact sit side by side. */
+body.blocks #read main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;max-width:min(1160px,calc(100vw - 64px));margin:0 auto}
+body.blocks #read main>.col{max-width:none;margin:0;width:auto}
+body.blocks #read main>.col.wide,body.blocks #read main>.col.term-col{grid-column:1/-1}
+body.blocks #read main>.col.term-col{max-width:680px;width:100%;margin:0 auto}
+body.blocks .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:52px 24px;align-items:start}
+body.blocks .stack .card{position:static;margin:0}
+body.blocks .stack .card:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 12px)}
 body.blocks #read{padding-top:calc(var(--skyH) + 6px);padding-bottom:calc(var(--floorH) + 56px)}
 #skyfade{position:fixed;left:0;right:0;top:0;height:var(--skyH);background:var(--bg);border-bottom:1px solid var(--rule);box-sizing:border-box;z-index:4990;pointer-events:none;transform:translateY(var(--sy));transition:transform .28s ease}
 #floorfade{position:fixed;left:0;right:0;bottom:0;height:calc(var(--floorH) + 32px);background:var(--bg);border-top:1px solid var(--rule);box-sizing:border-box;z-index:4990;pointer-events:none}
@@ -623,20 +631,20 @@ $('#read').innerHTML=`
 <div id="rwall" class="wallbox"></div>
 <div class="topline"><span class="mono">~/${esc(C.name.toLowerCase().replace(/\s+/g,'-'))}</span><span class="topnav">${ORDER.map(k=>`<a href="#${SEC[k]}">${LABEL[k].toLowerCase()}</a>`).join('')}<a href="#" id="toblocks">block menu</a></span></div>
 <main>
-<div class="col hero">
+<div class="col hero wide">
   <h1>${esc(C.name)}</h1>${scrib()}
   <div class="role">${esc(C.role)}</div>
   <p class="lede">${lede()}</p>
   <div class="cta"><a class="btn solid" href="${esc(C.resume)}" target="_blank" rel="noopener">Résumé</a><a class="btn" href="#contact-sec">Get in touch</a></div>
 </div>
-<div class="col">
+<div class="col wide">
   <section class="card anchor" id="about-sec" style="--pc:var(--brass)"><div class="ctab"><span>${sc("01 — about")}</span></div>${C.about.map(t=>`<p>${esc(t)}</p>`).join('')}<div class="kv" style="margin-top:14px">${C.facts.map(([k,v])=>`<span class="k">${esc(k)}</span><span>${esc(v)}</span>`).join('')}</div><details class="case now"><summary>What I’m up to now</summary><dl class="nowl"><dt class="nowd">As of ${esc(dayStr)}</dt><dd></dd>${C.now.map(([k,v])=>`<dt>${sc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl></details></section>
 </div>
-<div class="col anchor" id="work-sec" style="margin-top:56px">
+<div class="col wide anchor" id="work-sec" style="margin-top:56px">
   <div class="kick">${sc("02 — work")}</div><h2 class="sec">Work I would show you</h2>${squig()}
   <div class="stack">${C.projects.map((p,i)=>`<article class="card" style="--i:${i};--r:${ROT[i%4]}deg;--pc:var(--accx);--cp:color-mix(in srgb,var(--accx) ${100-[0,15,29,44,58][i%5]}%,#fff);--tc:${i<2?'#fff':'#150c2e'}"><div class="ctab"><span>${sc("case_"+String(i+1).padStart(2,"0"))}</span></div><span class="st">${esc(p.s)}</span><h3>${esc(p.n)}</h3><p>${esc(p.d)}</p><p class="res">${esc(p.r)}</p><details class="case"><summary>Read the case</summary>${caseDL(p,true)}</details>${p.t.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</article>`).join('')}</div>
 </div>
-<div class="col anchor" id="writing-sec" style="margin-top:40px">
+<div class="col wide anchor" id="writing-sec" style="margin-top:40px">
   <div class="kick">${sc("03 — writing")}</div><h2 class="sec">Writing</h2>${squig()}
   ${C.posts.length?featured():`<p>No posts yet. The first one is in progress.</p><p class="mono">New posts will show up here.</p>`}
 </div>
@@ -649,7 +657,7 @@ $('#read').innerHTML=`
   <div class="kick">${sc("05 — contact")}</div><h2 class="sec">Say hello.</h2>${squig()}
   <section class="card" style="--pc:var(--teal)"><div class="ctab"><span>${sc("contact")}</span></div><a class="mail u" href="mailto:${esc(C.email)}">${esc(C.email)}</a><div class="cta" style="margin:0 0 12px"><button class="btn solid" id="cp">Copy email</button></div><p style="margin:0">${C.links.map(([n,u])=>`<a class="u" href="${esc(u)}" target="_blank" rel="noopener">${esc(n)} ↗</a>`).join(' &nbsp; ')}</p></section>
 </div>
-<div class="col anchor" id="terminal-sec" style="margin-top:56px">
+<div class="col term-col anchor" id="terminal-sec" style="margin-top:56px">
   <div class="kick">${sc("06 — terminal")}</div><h2 class="sec">Poke around.</h2>${squig()}
   <div class="termbox"><div id="term"><div class="out"></div><form autocomplete="off"><span>&gt;</span><input spellcheck="false" aria-label="command"></form></div></div>
   <p class="mono" style="margin:10px 0 0;color:var(--mute);font-size:12px">A small game about vague emails. Ctrl+C for a command line.</p><div class="thanks"><span class="hand">End of page</span><button class="btn" id="top">↑ back to top</button></div>
