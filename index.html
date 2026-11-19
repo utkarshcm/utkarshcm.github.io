@@ -143,7 +143,7 @@ body.blocks #read main>.col{max-width:none;margin:0;width:auto}
 body.blocks #read main>.col.wide,body.blocks #read main>.col.term-col{grid-column:1/-1}
 body.blocks #read main>.col.term-col{max-width:680px;width:100%;margin:0 auto}
 body.blocks .stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:52px 24px;align-items:start}
-body.blocks .stack .card{position:static;margin:0}
+body.blocks .stack .card{position:relative;margin:0}
 body.blocks .stack .card:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 12px)}
 body.blocks #read{padding-top:calc(var(--skyH) + 6px);padding-bottom:calc(var(--floorH) + 56px)}
 #skyfade{position:fixed;left:0;right:0;top:0;height:var(--skyH);background:var(--bg);border-bottom:1px solid var(--rule);box-sizing:border-box;z-index:4990;pointer-events:none;transform:translateY(var(--sy));transition:transform .28s ease}
