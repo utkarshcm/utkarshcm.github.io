@@ -204,7 +204,6 @@ body.viewpage #page{display:block;padding:0 0 70px}
 .prev h3 a{color:var(--ink);text-decoration:none}.prev h3 a:hover{color:var(--accx)}
 .prev .ex{margin:8px 0 12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .prev .lk{display:flex;gap:18px;font:13px var(--mono)}.prev .lk a{color:var(--accx)}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -383,7 +382,8 @@ function unlock(id){
 const ORDER=['about','projects','writing','resume','mail','term'];
 const LABEL={about:'About',projects:'Work',writing:'Writing',tools:'Kit',resume:'Résumé',mail:'Contact',term:'Terminal'};
 const SEC={about:'about-sec',projects:'work-sec',writing:'writing-sec',tools:'tools-sec',resume:'resume-sec',mail:'contact-sec',term:'terminal-sec'};
-const RM=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+/* Block animations always play, even when the OS asks for reduced motion (owner's choice). */
+const RM=()=>false;
 let scrollAnim=0;
 function scrollToY(y){
   cancelAnimationFrame(scrollAnim);const y0=scrollY,dy=y-y0;
