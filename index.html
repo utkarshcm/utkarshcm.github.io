@@ -367,32 +367,34 @@ function blockWall(w,h,seed,cs,maxRows,xo=0){
 }
 function renderWalls(){const b=$('#rwall');if(b)b.innerHTML=blockWall(innerWidth,innerHeight,7,34,7)}
 
-/* ---------- block-mode wallpaper: slow, translucent pieces falling on one canvas ---------- */
+/* ---------- block-mode wallpaper: slow, translucent pieces falling on one canvas, drifting with the scroll ---------- */
 const WALL=(()=>{
   const cv=document.createElement('canvas');cv.id='fallwall';cv.setAttribute('aria-hidden','true');
-  const FPS=30,MAX=28,SPEED=[18,46],KEYS=Object.keys(SHAPES);
-  let ctx=null,W=0,H=0,dpr=1,cs=26,pcs=[],raf=0,last=0,on=false,cols=[];
+  const FPS=30,MAX=34,DENSITY=1.83,SPEED=[22,55],PAR=.5,KEYS=Object.keys(SHAPES);
+  let ctx=null,W=0,H=0,L=0,span=0,dpr=1,cs=26,pcs=[],raf=0,last=0,on=false,cols=[],ss=0;
   const R=(a,b)=>a+Math.random()*(b-a);
   const rot=(cells,n)=>{let c=cells;for(let i=0;i<n;i++)c=c.map(([x,y])=>[y,-x]);const mx=Math.min(...c.map(q=>q[0])),my=Math.min(...c.map(q=>q[1]));return c.map(([x,y])=>[x-mx,y-my])};
-  function spawn(p,first){
+  /* a piece falls along p.y in [0,L); scroll shifts what is drawn, and the loop wraps so it never runs out */
+  const eff=p=>(((p.y-ss*PAR)%L)+L)%L-span;
+  const off=p=>{const e=eff(p);return e>H||e+p.h*cs<0};
+  function shape(p){
     const sh=KEYS[Math.floor(Math.random()*KEYS.length)],cells=rot(SHAPES[sh],Math.floor(Math.random()*4));
     p.cells=cells;p.w=Math.max(...cells.map(q=>q[0]))+1;p.h=Math.max(...cells.map(q=>q[1]))+1;
-    p.c=Math.floor(Math.random()*cols.length);p.x=Math.floor(Math.random()*Math.max(1,Math.floor(W/cs)-p.w+1))*cs;
-    p.y=first?R(-p.h*cs,H):-p.h*cs-R(0,H*.35);p.v=R(SPEED[0],SPEED[1]);return p;
+    p.c=Math.floor(Math.random()*cols.length);p.x=Math.floor(Math.random()*Math.max(1,Math.floor(W/cs)-p.w+1))*cs;p.v=R(SPEED[0],SPEED[1]);p.dirty=false;return p;
   }
   function size(){
-    dpr=Math.min(window.devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;
+    dpr=Math.min(window.devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;span=4*cs;L=H+2*span;ss=scrollY;
     cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
     const css=getComputedStyle(document.documentElement);
     cols=['--b1','--b2','--b3'].map(v=>css.getPropertyValue(v).trim()||'#888');
-    const n=Math.min(MAX,Math.max(8,Math.round(W/cs/2.2)));pcs=Array.from({length:n},()=>spawn({},true));
+    const n=Math.min(MAX,Math.max(10,Math.round(W/cs/DENSITY)));pcs=Array.from({length:n},()=>{const p=shape({});p.y=Math.random()*L;return p});
   }
   const rr=(x,y,w,h,r)=>{ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()};
   function draw(){
     ctx.clearRect(0,0,W,H);
     for(let ci=0;ci<cols.length;ci++){
       ctx.fillStyle=cols[ci];ctx.beginPath();
-      for(const p of pcs){if(p.c!==ci||p.y>H||p.y+p.h*cs<0)continue;for(const q of p.cells)rr(p.x+q[0]*cs+1,p.y+q[1]*cs+1,cs-2,cs-2,5)}
+      for(const p of pcs){if(p.c!==ci)continue;const e=eff(p);if(e>H||e+p.h*cs<0)continue;for(const q of p.cells)rr(p.x+q[0]*cs+1,e+q[1]*cs+1,cs-2,cs-2,5)}
       ctx.fill();
     }
   }
@@ -403,7 +405,8 @@ const WALL=(()=>{
     /* hold still while the page is hidden, a piece is being dropped, or a line is clearing */
     if(document.hidden||busy||!noneFlying()||document.body.classList.contains('viewpage'))return;
     const t0=performance.now();
-    for(const p of pcs){p.y+=p.v*dt;if(p.y>H)spawn(p,false)}
+    ss+=(scrollY-ss)*Math.min(1,dt*9);
+    for(const p of pcs){p.y+=p.v*dt;if(p.y>=L){p.y-=L;p.dirty=true}if(p.dirty&&off(p))shape(p)}
     draw();
     const d=performance.now()-t0;stats.n++;stats.sum+=d;if(d>stats.max)stats.max=d;
   }
@@ -418,7 +421,7 @@ const WALL=(()=>{
       on=false;cancelAnimationFrame(raf);raf=0;if(ctx)ctx.clearRect(0,0,W,H);
     }
   }
-  return {sync,stats,get count(){return pcs.length}};
+  return {sync,stats,get count(){return pcs.length},get shift(){return ss*PAR}};
 })();
 
 /* ---------- theme ---------- */
