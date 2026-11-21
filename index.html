@@ -44,6 +44,8 @@ p{margin:0 0 12px}
 #read{min-height:100%;overflow-x:hidden;background-color:var(--bg);padding-bottom:96px}
 #read main{position:relative;z-index:1}
 #rwall{position:fixed;inset:0;z-index:0;opacity:.2}
+#fallwall{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:.5;pointer-events:none;display:none}
+body.blocks #fallwall{display:block}
 .dock svg{width:22px;height:22px}.dock svg rect{opacity:.55}.dock a.cur svg rect{opacity:1}
 .topline{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--rule);display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px}
 .topnav{display:none;gap:18px;align-items:center;font:13px var(--mono)} .topnav a{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent} .topnav a:hover{border-color:var(--accx)}
@@ -365,6 +367,60 @@ function blockWall(w,h,seed,cs,maxRows,xo=0){
 }
 function renderWalls(){const b=$('#rwall');if(b)b.innerHTML=blockWall(innerWidth,innerHeight,7,34,7)}
 
+/* ---------- block-mode wallpaper: slow, translucent pieces falling on one canvas ---------- */
+const WALL=(()=>{
+  const cv=document.createElement('canvas');cv.id='fallwall';cv.setAttribute('aria-hidden','true');
+  const FPS=30,MAX=28,SPEED=[18,46],KEYS=Object.keys(SHAPES);
+  let ctx=null,W=0,H=0,dpr=1,cs=26,pcs=[],raf=0,last=0,on=false,cols=[];
+  const R=(a,b)=>a+Math.random()*(b-a);
+  const rot=(cells,n)=>{let c=cells;for(let i=0;i<n;i++)c=c.map(([x,y])=>[y,-x]);const mx=Math.min(...c.map(q=>q[0])),my=Math.min(...c.map(q=>q[1]));return c.map(([x,y])=>[x-mx,y-my])};
+  function spawn(p,first){
+    const sh=KEYS[Math.floor(Math.random()*KEYS.length)],cells=rot(SHAPES[sh],Math.floor(Math.random()*4));
+    p.cells=cells;p.w=Math.max(...cells.map(q=>q[0]))+1;p.h=Math.max(...cells.map(q=>q[1]))+1;
+    p.c=Math.floor(Math.random()*cols.length);p.x=Math.floor(Math.random()*Math.max(1,Math.floor(W/cs)-p.w+1))*cs;
+    p.y=first?R(-p.h*cs,H):-p.h*cs-R(0,H*.35);p.v=R(SPEED[0],SPEED[1]);return p;
+  }
+  function size(){
+    dpr=Math.min(window.devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;
+    cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);
+    const css=getComputedStyle(document.documentElement);
+    cols=['--b1','--b2','--b3'].map(v=>css.getPropertyValue(v).trim()||'#888');
+    const n=Math.min(MAX,Math.max(8,Math.round(W/cs/2.2)));pcs=Array.from({length:n},()=>spawn({},true));
+  }
+  const rr=(x,y,w,h,r)=>{ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()};
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let ci=0;ci<cols.length;ci++){
+      ctx.fillStyle=cols[ci];ctx.beginPath();
+      for(const p of pcs){if(p.c!==ci||p.y>H||p.y+p.h*cs<0)continue;for(const q of p.cells)rr(p.x+q[0]*cs+1,p.y+q[1]*cs+1,cs-2,cs-2,5)}
+      ctx.fill();
+    }
+  }
+  function frame(t){
+    raf=requestAnimationFrame(frame);
+    if(t-last<1000/FPS-2)return;
+    const dt=Math.min(.1,(t-last)/1000);last=t;
+    /* hold still while the page is hidden, a piece is being dropped, or a line is clearing */
+    if(document.hidden||busy||!noneFlying()||document.body.classList.contains('viewpage'))return;
+    const t0=performance.now();
+    for(const p of pcs){p.y+=p.v*dt;if(p.y>H)spawn(p,false)}
+    draw();
+    const d=performance.now()-t0;stats.n++;stats.sum+=d;if(d>stats.max)stats.max=d;
+  }
+  const stats={n:0,sum:0,max:0};
+  function sync(blocks){
+    if(blocks&&!on){
+      on=true;if(!cv.isConnected)$('#read').prepend(cv);size();last=0;raf=requestAnimationFrame(frame);
+    }else if(blocks&&on){
+      if(!cv.isConnected)$('#read').prepend(cv);
+      if(W!==innerWidth||H!==innerHeight)size();
+    }else if(!blocks&&on){
+      on=false;cancelAnimationFrame(raf);raf=0;if(ctx)ctx.clearRect(0,0,W,H);
+    }
+  }
+  return {sync,stats,get count(){return pcs.length}};
+})();
+
 /* ---------- theme ---------- */
 const THEMES=[['night','Midnight library','#1C1A17','#C2A15B'],['clay','Clay and ink','#D9C7C1','#7A2E3F'],['moss','Moss and bone','#E8E4D6','#62723A'],['signal','Ink and signal','#E9EBEC','#FF5A36'],['ocean','Sand and ocean','#E7DDC8','#2A737A'],['concrete','Concrete','#C8C8C5','#A63A22'],['chalk','Chalk','#F1F0EC','#A63A22'],['chalkblue','Chalk and blue','#F1F0EC','#2F58C8'],['chalkgold','Chalk and gold','#F1F0EC','#A67600'],['chalkviolet','Chalk and violet','#F1F0EC','#6A4DB8']];
 const KITS=[['a','Newsreader + Space Mono'],['b','Inter + JetBrains Mono'],['c','Instrument Serif + Inter'],['d','IBM Plex'],['e','Geist'],['f','Archivo Black + Georgia']];
@@ -676,7 +732,7 @@ function applyNav(){
   const on=wide.matches&&!plain;
   document.body.classList.toggle('blocks',on);document.body.classList.toggle('plain',plain);
   if(on){if(!built){buildPieces();built=true}geom();placeAll();syncFloor();curSec=undefined}
-  renderWalls();foundRender();spy();
+  renderWalls();WALL.sync(on);foundRender();spy();
 }
 function setPlain(v){plain=v;try{localStorage.setItem('mlplain',v?'1':'0')}catch(e){}applyNav();if(v)unlock('plain')}
 $('#plainbtn').onclick=()=>setPlain(true);
