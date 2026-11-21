@@ -370,7 +370,7 @@ function renderWalls(){const b=$('#rwall');if(b)b.innerHTML=blockWall(innerWidth
 /* ---------- block-mode wallpaper: slow, translucent pieces falling on one canvas, drifting with the scroll ---------- */
 const WALL=(()=>{
   const cv=document.createElement('canvas');cv.id='fallwall';cv.setAttribute('aria-hidden','true');
-  const FPS=30,MAX=34,DENSITY=1.83,SPEED=[22,55],PAR=.5,KEYS=Object.keys(SHAPES);
+  const FPS=30,MAX=34,DENSITY=1.83,SPEED=[36,92],PAR=.5,KEYS=Object.keys(SHAPES);
   let ctx=null,W=0,H=0,L=0,span=0,dpr=1,cs=26,pcs=[],raf=0,last=0,on=false,cols=[],ss=0;
   const R=(a,b)=>a+Math.random()*(b-a);
   const rot=(cells,n)=>{let c=cells;for(let i=0;i<n;i++)c=c.map(([x,y])=>[y,-x]);const mx=Math.min(...c.map(q=>q[0])),my=Math.min(...c.map(q=>q[1]));return c.map(([x,y])=>[x-mx,y-my])};
