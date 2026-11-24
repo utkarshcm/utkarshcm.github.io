@@ -60,7 +60,7 @@ body.blocks #fallwall{display:block}
 .cp{font-style:normal;font-size:1.3em;letter-spacing:.1em;line-height:0}
 .ctab span{display:block;line-height:1;padding-top:1px}
 #read h2.sec{font:var(--hw) clamp(32px,9vw,44px)/1.05 var(--head);letter-spacing:-.01em;margin:0 0 8px}
-.hero{padding:34px 18px 0}
+.hero{padding:48px 18px 0}.hero>.card{padding-top:28px;padding-bottom:24px}
 .hero h1{font:var(--hw) clamp(50px,15vw,84px)/1 var(--head);letter-spacing:-.02em}
 .scrib,.squig{display:block;fill:none;stroke:var(--accx);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .scrib{width:min(330px,78%);height:14px;margin:8px 0 6px}
@@ -699,10 +699,12 @@ $('#read').innerHTML=`
 <div class="topline"><span class="mono">~/${esc(C.name.toLowerCase().replace(/\s+/g,'-'))}</span><span class="topnav">${ORDER.map(k=>`<a href="#${SEC[k]}">${LABEL[k].toLowerCase()}</a>`).join('')}<a href="#" id="toblocks">block menu</a></span></div>
 <main>
 <div class="col hero wide anchor" id="about-sec">
+  <section class="card" style="--pc:var(--accx);margin:0"><div class="ctab"><span>${sc("about")}</span></div>
   <h1>${esc(C.name)}</h1>${scrib()}
   <div class="role">${esc(C.role)}</div>
   ${lede()}
   <div class="cta"><a class="btn solid" href="${esc(C.resume)}" target="_blank" rel="noopener">Résumé</a><a class="btn" href="#contact-sec">Get in touch</a></div>
+  </section>
 </div>
 <div class="col wide anchor" id="work-sec" style="margin-top:56px">
   <div class="kick">${sc("01 — work")}</div><h2 class="sec">Only the greatest hits</h2>${squig()}
