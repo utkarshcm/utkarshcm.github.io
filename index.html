@@ -238,6 +238,10 @@ body.viewpage #page{display:block;padding:0 0 70px}
 <div id="toasts"></div>
 
 <script>
+/* ===== analytics (GoatCounter). Put your site code here, e.g. 'utkarshcm'. Empty = off. ===== */
+const GC_CODE='';
+const track=(path,title)=>{try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path,title:String(title||path).slice(0,200),event:true})}catch(_){}};
+if(GC_CODE){const g=document.createElement('script');g.async=true;g.src='https://gc.zgo.at/count.js';g.dataset.goatcounter='https://'+GC_CODE+'.goatcounter.com/count';document.head.appendChild(g)}
 /* ===== EDIT ME: placeholder content ===== */
 const C={
   name:'Utkarsh Mishra', role:'MBA ’26 · Strategy & Ops · Pricing & GTM',
@@ -617,19 +621,20 @@ function termInit(el){
     say('<i>'+esc(e.note)+'</i>');
     say('Type your reply and press Enter. <b>Ctrl+C</b> (or type <b>exit</b>) for a command line.','dim');
   }
-  function nextEmail(){sc=(sc+1)%SCENARIOS.length;setMode('game');showEmail()}
+  function nextEmail(){sc=(sc+1)%SCENARIOS.length;setMode('game');showEmail();track('term/email-shown',SCENARIOS[sc].subj)}
   function judge(r){
     const e=SCENARIOS[sc],nm=e.from.split(/[ (]/)[0];let n=0;
     say('');
     e.needs.forEach(([label,t])=>{const ok=typeof t==='function'?t(r):t.test(r);if(ok)n++;say((ok?'  [x] ':'  [ ] ')+esc(label))});
     const total=e.needs.length;
+    track('term/result/'+(n===total?'pass':n>=total-1?'close':'fail'),e.subj+' '+n+'/'+total);
     say('\n'+(n===total?'<b>'+nm+' reads it once and relaxes.</b> '+n+'/'+total:(n>=total-1?'Close. '+nm+' will probably follow up. ':nm+' will now spend ten minutes guessing. ')+n+'/'+total));
     if(n<total)say('<i>'+esc(e.tip)+'</i>');
     say('\nPress Enter for the next email, or Ctrl+C for a command line.','dim');
     mode='await';
   }
   function toShell(viaKey){
-    if(mode==='shell')return;
+    if(mode==='shell')return;track('term/to-command-line',viaKey?'ctrl+c':'exit');
     say(viaKey?'^C':'');say('game paused. this is a command line now. type <b>help</b>, or <b>game</b> to go back.');setMode('shell');
   }
   const cmds={
@@ -650,7 +655,7 @@ function termInit(el){
   function lev(a,b){const m=[...Array(a.length+1)].map((_,i)=>[i,...Array(b.length).fill(0)]);for(let j=1;j<=b.length;j++)m[0][j]=j;
     for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length]}
   function runShell(v){
-    const [c,...r]=v.split(/\s+/);const f=cmds[c.toLowerCase()];
+    const [c,...r]=v.split(/\s+/);const f=cmds[c.toLowerCase()];track('term/command/'+(f?c.toLowerCase():'unknown'),v);
     if(f){const res=f(r[0]);if(res)say(res)}
     else{const g=guess(c.toLowerCase());say('command not found: '+esc(c)+(g?'. did you mean <b>'+g+'</b>?':''))}
   }
@@ -660,7 +665,7 @@ function termInit(el){
     if(mode==='await'){echo(v);if(v.toLowerCase()==='exit')toShell();else nextEmail();return}
     if(!v)return;
     echo(v);hist.push(v);hi=hist.length;unlock('hack');
-    if(mode==='game'){if(v.toLowerCase()==='exit'){toShell();return}judge(v);return}
+    if(mode==='game'){if(v.toLowerCase()==='exit'){toShell();return}track('term/reply',SCENARIOS[sc].subj+': '+v);judge(v);return}
     runShell(v);
   };
   inp.addEventListener('keydown',e=>{
@@ -672,7 +677,7 @@ function termInit(el){
     }
   });
   el.querySelector('.termbox').addEventListener('click',()=>inp.focus({preventScroll:true}));
-  const boot=()=>{if(started)return;started=true;say('booting <b>inbox.exe</b> ...','dim');setTimeout(()=>{sc=-1;nextEmail()},450)};
+  const boot=()=>{if(started)return;started=true;track('term/boot','terminal seen');say('booting <b>inbox.exe</b> ...','dim');setTimeout(()=>{sc=-1;nextEmail()},450)};
   new IntersectionObserver((en,o)=>{if(en[0].isIntersecting){boot();o.disconnect()}},{threshold:.35}).observe(el.querySelector('.termbox'));
 }
 
@@ -738,7 +743,7 @@ $('#read').innerHTML=`
 <div class="col term-col anchor" id="terminal-sec" style="margin-top:56px">
   <div class="kick">${sc("06 — terminal")}</div><h2 class="sec">Poke around.</h2>${squig()}
   <div class="termbox"><div id="term"><div class="out"></div><form autocomplete="off"><span>&gt;</span><input spellcheck="false" aria-label="command"></form></div></div>
-  <p class="mono" style="margin:10px 0 0;color:var(--mute);font-size:12px">A small game about vague emails. Ctrl+C for a command line.</p><div class="thanks"><span class="hand">End of page</span><button class="btn" id="top">↑ back to top</button></div>
+  <p class="mono" style="margin:10px 0 0;color:var(--mute);font-size:12px">A small game about vague emails. Ctrl+C for a command line. Visits are counted anonymously, and commands and replies typed here are logged to see how people use it.</p><div class="thanks"><span class="hand">End of page</span><button class="btn" id="top">↑ back to top</button></div>
 </div>
 </main>
 <nav class="dock" aria-label="Sections">${[['about','about-sec','About'],['projects','work-sec','Work'],['resume','resume-sec','Résumé'],['mail','contact-sec','Contact']].map(([k,id,l])=>`<a href="#${id}" data-sec="${id}" data-k="${k}">${mini(k)}<span>${l}</span></a>`).join('')}</nav>`;
